@@ -25,7 +25,7 @@ resource "aws_key_pair" "mykey" {
 }
 
 resource "aws_security_group" "sg-1" {
-  name_prefix = "sg-1"
+  name_prefix = "group1"
   vpc_id      = "${var.vpc_id}"
 }
 
@@ -40,7 +40,7 @@ resource "aws_instance" "host-1" {
 }
 
 resource "aws_security_group" "sg-2" {
-  name_prefix = "sg-2"
+  name_prefix = "group2"
   vpc_id      = "${var.vpc_id}"
 }
 
