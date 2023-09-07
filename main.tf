@@ -36,7 +36,11 @@ resource "aws_instance" "host-1" {
 
   subnet_id              = var.subnet_ids[0]
   vpc_security_group_ids = ["${aws_security_group.sg-1.id}"]
-  user_data              = "${data.template_file.startup.rendered}"  
+  user_data              = "${data.template_file.startup.rendered}"
+  
+  tags = {
+    Name = "host-1"
+  }
 }
 
 resource "aws_security_group" "sg-2" {
@@ -51,22 +55,26 @@ resource "aws_instance" "host-2" {
   key_name      = "${aws_key_pair.mykey.id}"
   subnet_id              = var.subnet_ids[0]
   user_data              = "${data.template_file.startup.rendered}"
+
+  tags = {
+    Name = "host-2"
+  }
 }
 
 # allow 1 to 1 send ping package to 2
 resource "aws_vpc_security_group_egress_rule" "sg1-egress" {
   security_group_id = aws_security_group.sg-1.id
-  ip_protocol = "icmp"
-  from_port   = 0
-  to_port     = 0
+  ip_protocol = "tcp"
+  from_port   = 80
+  to_port     = 80
   referenced_security_group_id = aws_security_group.sg-2.id
 }
 
 resource "aws_vpc_security_group_ingress_rule" "sg2-ingress" {
   security_group_id = aws_security_group.sg-2.id
-  ip_protocol = "icmp"
-  from_port   = 0
-  to_port     = 0
+  ip_protocol = "tcp"
+  from_port   = 80
+  to_port     = 80
   referenced_security_group_id = aws_security_group.sg-1.id  
 }
 
