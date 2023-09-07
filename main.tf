@@ -36,7 +36,7 @@ resource "aws_instance" "host-1" {
 
   subnet_id              = var.subnet_ids[0]
   vpc_security_group_ids = ["${aws_security_group.sg-1.id}"]
-  user_data              = "${data.template_file.startup.rendered}"
+  user_data              = "${data.template_file.startup.rendered}"  
 }
 
 resource "aws_security_group" "sg-2" {
@@ -53,32 +53,40 @@ resource "aws_instance" "host-2" {
   user_data              = "${data.template_file.startup.rendered}"
 }
 
-# ingress {
-#   from_port   = 0
-#   to_port     = 0
-#   protocol    = "-1"
-#   cidr_blocks = ["0.0.0.0/0"]
-# }
-
 # allow 1 to 1 send ping package to 2
 resource "aws_vpc_security_group_egress_rule" "sg1-egress" {
   security_group_id = aws_security_group.sg-1.id
   ip_protocol = "icmp"
-  referenced_security_group_id = aws_security_group.sg-2.id  
+  from_port   = 0
+  to_port     = 0
+  referenced_security_group_id = aws_security_group.sg-2.id
 }
-# allow 2 to accept icmp package from 1
+
 resource "aws_vpc_security_group_ingress_rule" "sg2-ingress" {
   security_group_id = aws_security_group.sg-2.id
   ip_protocol = "icmp"
+  from_port   = 0
+  to_port     = 0
   referenced_security_group_id = aws_security_group.sg-1.id  
 }
 
-# egress {
-#   from_port   = 0
-#   to_port     = 0
-#   protocol    = "-1"
-#   cidr_blocks = ["0.0.0.0/0"]
-# }
+# # allow ssh
+resource "aws_vpc_security_group_ingress_rule" "sg1-ssh" {
+  security_group_id = aws_security_group.sg-1.id
+  from_port   = 22
+  to_port     = 22  
+  cidr_ipv4 = "0.0.0.0/0"
+  ip_protocol = "tcp"
+}
+resource "aws_vpc_security_group_ingress_rule" "sg2-ssh" {
+  security_group_id = aws_security_group.sg-2.id
+  from_port   = 22
+  to_port     = 22  
+  cidr_ipv4 = "0.0.0.0/0"
+  ip_protocol = "tcp"
+}
+
+
 
 
 
