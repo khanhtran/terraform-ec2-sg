@@ -7,3 +7,4 @@ sudo apt-get install -y openjdk-11-jre
 sudo apt-get install -y maven
 sudo apt-get install -y git
 sudo apt-get install -y jq
+sudo apt-get install -y apache2
